@@ -3,7 +3,10 @@ from sklearn.datasets import load_iris
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
-from sklearn.model_selection import train_test_split #数据集划分
+from sklearn.model_selection import train_test_split  # 数据集划分
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+
 # 设置字体为楷体
 plt.rcParams['font.sans-serif'] = ['KaiTi']
 
@@ -56,6 +59,22 @@ plot_iris(iris_d, 'Petal_Length', 'Sepal_Length')
     test_size 测试集占比，默认30%
 '''
 print(iris.data.shape)
-x_train,x_test,y_train,y_test=train_test_split(iris.data,iris.target,random_state=22,test_size=0.3)
-print(x_train.shape,x_test.shape)
+x_train, x_test, y_train, y_test = train_test_split(iris.data, iris.target, random_state=2, test_size=0.3)
+print(x_train.shape, x_test.shape)
 
+# 数据标准化
+transfer = StandardScaler()
+x_train = transfer.fit_transform(x_train)
+x_test = transfer.transform(x_test)  # 如果x_test不标准化，预测值就不准确，这里沿用了训练集的均值和方差
+# 如果我用fit_transform 那么用的是训练集的均值和方差
+# https://blog.csdn.net/weixin_38278334/article/details/82971752
+# 训练模型
+estimator = KNeighborsClassifier(n_neighbors=9)
+estimator.fit(x_train, y_train)  # y表示类别
+
+y_predict = estimator.predict(x_test)
+print("预测结果为:\n", y_predict)
+print("⽐对真实值和预测值：\n", y_predict == y_test)
+# 可以自己算
+score = estimator.score(x_test, y_test)
+print("准确率为：\n", score)
