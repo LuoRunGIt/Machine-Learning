@@ -3,6 +3,9 @@ from sklearn.model_selection import train_test_split, GridSearchCV  # 数据集�
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
 
+# import importlib,sys
+# importlib.reload(sys)
+# sys.setdefaultencoding('utf8')
 facebook = pd.read_csv("E:\\BaiduNetdiskDownload\\课程资料\\05-机器学习\\02-机器学习代码\\chapter08\\data\\FBlocation\\train.csv")
 
 # print(facebook.head(), facebook.shape)
@@ -68,7 +71,8 @@ estimator = KNeighborsClassifier()
 # n_neighbors
 param_grid1 = {"n_neighbors": [1, 3, 5, 7, 9]}
 # -1表示所有所有cup
-estimator = GridSearchCV(estimator, param_grid=param_grid1, cv=10)
+# 这里有一个utf-8编码的问题n_jobs
+estimator = GridSearchCV(estimator, param_grid=param_grid1, cv=3)
 estimator.fit(x_train, y_train)
 
 # 模型验证
