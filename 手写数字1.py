@@ -107,7 +107,7 @@ class ConvNet(nn.Module):
         # x的尺寸：(batch_size, depth[0], image_width/ 2， image_height/2)
 
         x = self.conv2(x)  # 第三层又是卷积，窗口为5，输入输出通道分列为depth[o]=4,depth[1]=8
-        x = self.pool(x)  # 第四层池化，将图片缩小到原来的 1/4
+        x = self.poo1(x)  # 第四层池化，将图片缩小到原来的 1/4
         # x的尺寸：(batch_size, depth[1], image_width/ 4, image_height/4)
         # 将立体的特征图 tensor 压成一个一维的向量
         # view 函数可以将一个tensor 按指定的方式重新排布
@@ -143,12 +143,12 @@ optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 record = []  # 记录准确率等数值的容器
 weights = []  # 每若干步就记录一次卷积核
 
-#训练循环
+#准确率
 def rightness(output, target):
     preds = output.data.max(dim=1, keepdim=True)[1]
     return preds.eq(target.data.view_as(preds)).cpu().sum(), len(target)
 
-
+#训练循环
 for epoch in range(num_epochs):
     train_rights = []  # 记录训练数据集准确率的容器
     '''
@@ -159,6 +159,9 @@ for epoch in range(num_epochs):
     for batch_idx, (data, target) in enumerate(train_loader):  # 针对容器中的每一个批进行循环
         # 将 Tensor 转化为 Variable, data 为一批图像，target 为一批标签
         data, target = Variable(data), Variable(target)
+        #64表示图片数量
+        #<class 'torch.Tensor'> torch.Size([64, 1, 28, 28]) <class 'torch.Tensor'> torch.Size([64])
+        #print(type(data),data.shape,type(target),target.shape)
         # 给网络模型做标记，标志着模型在训练集上训练
         # 这种区分主要是为了打开关闭net的training标志，从而决定是否运行dropout
         net.train()
@@ -208,3 +211,7 @@ for epoch in range(num_epochs):
             # 这里使用clone这个函数很重要
             weights.append([net.conv1.weight.data.clone(), net.conv1.bias.data.clone(),
                             net.conv2.weight.data.clone(), net.conv2.bias.data.clone()])
+#注意池化是poo1不是pool
+#训练轮数为19
+
+#print(type(train_dataset),train_dataset.shape)
