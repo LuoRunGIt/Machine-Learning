@@ -14,6 +14,7 @@ import csv
 # 首先我们需要将图片转换为tensor 并且和标签一一对应
 
 import csv
+import pic_tensor1
 csv_reader = csv.reader(open("E:\\BaiduNetdiskDownload\\baokemeng\\pokemon\\images.csv"))
 for row in csv_reader:
 	print(row)
