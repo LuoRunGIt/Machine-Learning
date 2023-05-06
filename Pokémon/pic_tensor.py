@@ -7,6 +7,7 @@ import torchvision.transforms as transforms
 
 img=cv2.imread('E:/BaiduNetdiskDownload/baokemeng/pokemon/mewtwo/00000239.jpg')
 print("cv2 读取后的图片维度",img.shape)
+img=cv2.resize(img, (600, 600))
 #(1200, 1600, 3) 对应通道为H,W,C
 cv2.imshow("",img)
 cv2.waitKey(0)

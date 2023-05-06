@@ -10,8 +10,9 @@ def imgToTensor(imgpath):
     image = io.imread(imgpath)
     image = cv2.cvtColor(image, cv2.COLOR_RGBA2BGR)
     #这里先这么写
-    img=cv2.resize(image, (1200, 1200))
+    img=cv2.resize(image, (600, 600))
     transf = transforms.ToTensor()
     img_tensor = transf(img)
+    del(img)
     return img_tensor
 
