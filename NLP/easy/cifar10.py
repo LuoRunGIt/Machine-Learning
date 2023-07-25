@@ -78,12 +78,16 @@ criterion = nn.CrossEntropyLoss()
 # 优化器，随机梯度下降,momentum动量
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
+#GPU训练
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 '''训练'''
 # 整体数据集训练2次
 for epoch in range(2):
     running_loss = 0.0
+    net.to(device)
     for i, data in enumerate(trainloader, 0):
-        inputs, labels = data
+        #inputs, labels = data
+        inputs, labels = data[0].to(device), data[1].to(device)
         # 梯度优化器归零
         optimizer.zero_grad()
 
