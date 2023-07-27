@@ -22,3 +22,4 @@ myobj2=jieba.cut_for_search(sentence=content)
 print("myobj2-->",myobj2)
 mydata3=jieba.lcut_for_search(sentence=content)
 print("mydata3-->",mydata3)
+
