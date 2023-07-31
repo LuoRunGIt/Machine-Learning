@@ -46,3 +46,16 @@ plt.show()
 # 绘制验证集⻓度分布的散点图
 sns.stripplot(y='sentence_length',x='label',data=valid_data)
 plt.show()
+
+# 导⼊jieba⽤于分词
+# 导⼊chain⽅法⽤于扁平化列表
+import jieba
+from itertools import chain
+# 进⾏训练集的句⼦进⾏分词, 并统计出不同词汇的总数
+train_vocab = set(chain(*map(lambda x: jieba.lcut(x),
+train_data["sentence"])))
+print("训练集共包含不同词汇总数为：", len(train_vocab))
+# 进⾏验证集的句⼦进⾏分词, 并统计出不同词汇的总数
+valid_vocab = set(chain(*map(lambda x: jieba.lcut(x),
+valid_data["sentence"])))
+print("训练集共包含不同词汇总数为：", len(valid_vocab))
