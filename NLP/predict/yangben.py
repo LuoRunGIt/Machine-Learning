@@ -17,3 +17,32 @@ plt.show()
 sns.countplot(x="label", data=valid_data)
 plt.title("valid_data")
 plt.show()
+
+#获取训练集和验证集的句⼦⻓度分布
+# 在训练数据中添加新的句⼦⻓度列, 每个元素的值都是对应的句⼦列的⻓度
+train_data["sentence_length"] = list(map(lambda x: len(x),train_data["sentence"]))
+# 绘制句⼦⻓度列的数量分布图
+sns.countplot(x="sentence_length", data=train_data)
+# 主要关注count⻓度分布的纵坐标, 不需要绘制横坐标, 横坐标范围通过dist图进⾏查看
+plt.xticks([])
+plt.show()
+# 绘制dist⻓度分布图
+sns.distplot(train_data["sentence_length"])
+# 主要关注dist⻓度分布横坐标, 不需要绘制纵坐标
+plt.yticks([])
+plt.show()
+# 在验证数据中添加新的句⼦⻓度列, 每个元素的值都是对应的句⼦列的⻓度
+valid_data["sentence_length"] = list(map(lambda x: len(x),
+valid_data["sentence"]))
+# 绘制句⼦⻓度列的数量分布图
+sns.countplot(x="sentence_length", data=valid_data)
+# 主要关注count⻓度分布的纵坐标, 不需要绘制横坐标, 横坐标范围通过dist图进⾏查看
+plt.xticks([])
+plt.show()
+
+# 绘制训练集⻓度分布的散点图
+sns.stripplot(y='sentence_length',x='label',data=train_data)
+plt.show()
+# 绘制验证集⻓度分布的散点图
+sns.stripplot(y='sentence_length',x='label',data=valid_data)
+plt.show()
