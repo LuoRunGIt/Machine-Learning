@@ -1,3 +1,4 @@
+ngram_range = 2
 def create_ngram_set(input_list):
  """
  description: 从数值列表中提取所有的n-gram特征
@@ -9,3 +10,7 @@ def create_ngram_set(input_list):
  {(4, 9), (4, 1), (1, 4), (9, 4)}
  """
  return set(zip(*[input_list[i:] for i in range(ngram_range)]))
+
+input_list = [1, 3, 2, 1, 5, 3]
+res = create_ngram_set(input_list)
+print(res)
