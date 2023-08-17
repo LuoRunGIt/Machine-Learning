@@ -255,7 +255,8 @@ criterion = nn.NLLLoss()
 # 设置学习率为0.005
 learning_rate = 0.005
 
-#RNN的训练函数
+
+# RNN的训练函数
 def trainRNN(category_tensor, line_tensor):
     """定义训练函数, 它的两个参数是category_tensor类别的张量表示, 相当于训练数据的标签,
     line_tensor名字的张量表示, 相当于对应训练数据"""
@@ -278,45 +279,183 @@ def trainRNN(category_tensor, line_tensor):
         # 返回结果和损失的值
     return output, loss.item()
 
-#LSTM的训练函数
+
+# LSTM的训练函数
 def trainLSTM(category_tensor, line_tensor):
- hidden, c = lstm.initHiddenAndC()
- lstm.zero_grad()
- for i in range(line_tensor.size()[0]):
-    # 返回output, hidden以及细胞状态c
-    output, hidden, c = lstm(line_tensor[i], hidden, c)
- loss = criterion(output.squeeze(0), category_tensor)
- loss.backward()
- for p in lstm.parameters():
-     p.data.add_(-learning_rate, p.grad.data)
- return output, loss.item()
+    hidden, c = lstm.initHiddenAndC()
+    lstm.zero_grad()
+    for i in range(line_tensor.size()[0]):
+        # 返回output, hidden以及细胞状态c
+        output, hidden, c = lstm(line_tensor[i], hidden, c)
+    loss = criterion(output.squeeze(0), category_tensor)
+    loss.backward()
+    for p in lstm.parameters():
+        p.data.add_(-learning_rate, p.grad.data)
+    return output, loss.item()
 
-#GRU的训练函数
+
+# GRU的训练函数
 def trainGRU(category_tensor, line_tensor):
- hidden = gru.initHidden()
- gru.zero_grad()
- for i in range(line_tensor.size()[0]):
-    output, hidden= gru(line_tensor[i], hidden)
- loss = criterion(output.squeeze(0), category_tensor)
- loss.backward()
- for p in gru.parameters():
-    p.data.add_(-learning_rate, p.grad.data)
- return output, loss.item()
+    hidden = gru.initHidden()
+    gru.zero_grad()
+    for i in range(line_tensor.size()[0]):
+        output, hidden = gru(line_tensor[i], hidden)
+    loss = criterion(output.squeeze(0), category_tensor)
+    loss.backward()
+    for p in gru.parameters():
+        p.data.add_(-learning_rate, p.grad.data)
+    return output, loss.item()
 
 
-#每次训练的耗时
+# 每次训练的耗时
 def timeSince(since):
- "获得每次打印的训练耗时, since是训练开始时间"
- # 获得当前时间
- now = time.time()
- # 获得时间差，就是训练耗时
- s = now - since
- # 将秒转化为分钟, 并取整
- m = math.floor(s / 60)
- # 计算剩下不够凑成1分钟的秒数
- s -= m * 60
- # 返回指定格式的耗时
- return '%dm %ds' % (m, s)
+    "获得每次打印的训练耗时, since是训练开始时间"
+    # 获得当前时间
+    now = time.time()
+    # 获得时间差，就是训练耗时
+    s = now - since
+    # 将秒转化为分钟, 并取整
+    m = math.floor(s / 60)
+    # 计算剩下不够凑成1分钟的秒数
+    s -= m * 60
+    # 返回指定格式的耗时
+    return '%dm %ds' % (m, s)
 
 
 ##调用训练函数
+# 设置训练迭代次数
+n_iters = 1000
+# 设置结果的打印间隔
+print_every = 50
+# 设置绘制损失曲线上的制图间隔
+plot_every = 10
+
+
+def train(train_type_fn):
+    """训练过程的⽇志打印函数, 参数train_type_fn代表选择哪种模型训练函数, 如
+   trainRNN"""
+    # 每个制图间隔损失保存列表
+    all_losses = []
+    # 获得训练开始时间戳
+    start = time.time()
+    # 设置初始间隔损失为0
+    current_loss = 0
+    # 从1开始进⾏训练迭代, 共n_iters次
+    for iter in range(1, n_iters + 1):
+        # 通过randomTrainingExample函数随机获取⼀组训练数据和对应的类别
+        category, line, category_tensor, line_tensor = randomTrainingExample()
+        # 将训练数据和对应类别的张量表示传⼊到train函数中
+        output, loss = train_type_fn(category_tensor, line_tensor)
+        # 计算制图间隔中的总损失
+        current_loss += loss
+        # 如果迭代数能够整除打印间隔
+        if iter % print_every == 0:
+            # 取该迭代步上的output通过categoryFromOutput函数获得对应的类别和类别索引
+            guess, guess_i = categoryFromOutput(output)
+            # 然后和真实的类别category做⽐较, 如果相同则打对号, 否则打叉号.
+            correct = '✓' if guess == category else '✗ (%s)' % category
+            # 打印迭代步, 迭代步百分⽐, 当前训练耗时, 损失, 该步预测的名字, 以及是否正确
+            print('%d %d%% (%s) %.4f %s / %s %s' % (
+            iter, iter / n_iters * 100, timeSince(start), loss, line, guess, correct))
+        # 如果迭代数能够整除制图间隔
+        if iter % plot_every == 0:
+            # 将保存该间隔中的平均损失到all_losses列表中
+            all_losses.append(current_loss / plot_every)
+            # 间隔损失重置为0
+            current_loss = 0
+        # 返回对应的总损失列表和训练耗时
+    return all_losses, int(time.time() - start)
+
+# 调⽤train函数, 分别进⾏RNN, LSTM, GRU模型的训练
+# 并返回各⾃的全部损失, 以及训练耗时⽤于制图
+all_losses1, period1 = train(trainRNN)
+all_losses2, period2 = train(trainLSTM)
+all_losses3, period3 = train(trainGRU)
+
+
+# 绘制损失对⽐曲线, 训练耗时对⽐柱张图
+# 创建画布0
+plt.figure(0)
+# 绘制损失对⽐曲线
+plt.plot(all_losses1, label="RNN")
+plt.plot(all_losses2, color="red", label="LSTM")
+plt.plot(all_losses3, color="orange", label="GRU")
+plt.legend(loc='upper left')
+
+# 创建画布1
+plt.figure(1)
+x_data=["RNN", "LSTM", "GRU"]
+y_data = [period1, period2, period3]
+# 绘制训练耗时对⽐柱状图
+plt.bar(range(len(x_data)), y_data, tick_label=x_data)
+
+#步骤5评估函数
+#RNN
+def evaluateRNN(line_tensor):
+ """评估函数, 和训练函数逻辑相同, 参数是line_tensor代表名字的张量表示"""
+ # 初始化隐层张量
+ hidden = rnn.initHidden()
+ # 将评估数据line_tensor的每个字符逐个传⼊rnn之中
+ for i in range(line_tensor.size()[0]):
+    output, hidden = rnn(line_tensor[i], hidden)
+ # 获得输出结果
+ return output.squeeze(0)
+
+#LSTM
+def evaluateLSTM(line_tensor):
+ # 初始化隐层张量和细胞状态张量
+ hidden, c = lstm.initHiddenAndC()
+ # 将评估数据line_tensor的每个字符逐个传⼊lstm之中
+ for i in range(line_tensor.size()[0]):
+    output, hidden, c = lstm(line_tensor[i], hidden, c)
+ return output.squeeze(0)
+
+#GRU
+def evaluateGRU(line_tensor):
+ hidden = gru.initHidden()
+ # 将评估数据line_tensor的每个字符逐个传⼊gru之中
+ for i in range(line_tensor.size()[0]):
+    output, hidden = gru(line_tensor[i], hidden)
+ return output.squeeze(0)
+
+line = "Bai"
+line_tensor = lineToTensor(line)
+
+rnn_output = evaluateRNN(line_tensor)
+lstm_output = evaluateLSTM(line_tensor)
+gru_output = evaluateGRU(line_tensor)
+print("rnn_output:", rnn_output)
+print("gru_output:", lstm_output)
+print("gru_output:", gru_output)
+
+##构建预测函数
+def predict(input_line, evaluate, n_predictions=3):
+ """预测函数, 输⼊参数input_line代表输⼊的名字,
+ n_predictions代表需要取最有可能的top个"""
+ # ⾸先打印输⼊
+ print('\n> %s' % input_line)
+ # 以下操作的相关张量不进⾏求梯度
+ with torch.no_grad():
+    # 使输⼊的名字转换为张量表示, 并使⽤evaluate函数获得预测输出
+    output = evaluate(lineToTensor(input_line))
+    # 从预测的输出中取前3个最⼤的值及其索引
+    topv, topi = output.topk(n_predictions, 1, True)
+    # 创建盛装结果的列表
+    predictions = []
+     # 遍历n_predictions
+    for i in range(n_predictions):
+        # 从topv中取出的output值
+        value = topv[0][i].item()
+        # 取出索引并找到对应的类别
+        category_index = topi[0][i].item()
+        # 打印ouput的值, 和对应的类别
+        print('(%.2f) %s' % (value, all_categories[category_index]))
+        # 将结果装进predictions中
+        predictions.append([value, all_categories[category_index]])
+
+
+for evaluate_fn in [evaluateRNN, evaluateLSTM, evaluateGRU]:
+ print("-"*18)
+ predict('Dovesky', evaluate_fn)
+ predict('Jackson', evaluate_fn)
+ predict('Satoshi', evaluate_fn)
