@@ -35,6 +35,10 @@ def main():
                                images_class=train_images_label,
                                transform=data_transform["train"])
 
+    val_data_set=MyDataSet(images_path=val_images_path,
+                               images_class=val_images_label,
+                               transform=data_transform["val"])
+
     batch_size = 8
     nw = min([os.cpu_count(), batch_size if batch_size > 1 else 0, 8])  # number of workers
     print('Using {} dataloader workers'.format(nw))
@@ -42,9 +46,12 @@ def main():
     # 获取数据，测试的时候num_workers 设定为0
     train_loader = DataLoader(train_data_set, batch_size=batch_size, shuffle=True, num_workers=nw,
                               collate_fn=train_data_set.collate_fn)
-
+    val_loader=DataLoader(val_data_set, batch_size=batch_size, shuffle=True, num_workers=nw,
+                              collate_fn=train_data_set.collate_fn)
     # 可视化数据
-    plot_data_loader_image(train_loader)
+    #plot_data_loader_image(train_loader)
+    plot_data_loader_image(val_loader)
+
 
 
 if __name__ == '__main__':

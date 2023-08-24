@@ -4,7 +4,7 @@ import json
 import random
 import matplotlib.pyplot as plt
 
-
+#一类图片需要放在一个文件夹下
 def read_split_data(root: str, val_rate: float = 0.2, flag: bool = False):
     random.seed(0)  # 保证随机结果可复现
     assert os.path.exists(root), "dataset root: {} does not exist.".format(root)  # 断言数据集目录是否存在

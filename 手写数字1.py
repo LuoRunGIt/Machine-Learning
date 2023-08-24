@@ -87,7 +87,7 @@ class ConvNet(nn.Module):
         # 首先调用父类的相应的构造函数
         super(ConvNet, self).__init__()
         # 构造各个神经模块
-        # 定义一个卷积层，输入通道为1，输出为4 kernel为5,默认步长为1 填充为2
+        # 定义一个卷积层，输入通道为1（灰度图），输出为4 kernel为5,默认步长为1 填充为2
         self.conv1 = nn.Conv2d(1, 4, 5, padding=2)
         self.poo1 = nn.MaxPool2d(2, 2)  # 2d表示2维度,定义一个2x2的池化层
         self.conv2 = nn.Conv2d(depth[0], depth[1], 5, padding=2)

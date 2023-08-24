@@ -65,10 +65,97 @@ class Lang:
             self.n_words += 1
 
 
-name = "eng"#类型为英文
+'''
+name = "eng"  # 类型为英文
 sentence = "hello I am Jay"
 engl = Lang(name)
 engl.addSentence(sentence)
 print("word2index:", engl.word2index)
 print("index2word:", engl.index2word)
 print("n_words:", engl.n_words)
+'''
+
+
+# 将unicode转为Ascii, 我们可以认为是去掉⼀些语⾔中的重⾳标记：Ślusàrski
+def unicodeToAscii(s):
+    return ''.join(
+        c for c in unicodedata.normalize('NFD', s)
+        if unicodedata.category(c) != 'Mn'
+    )
+
+
+def normalizeString(s):
+    """字符串规范化函数, 参数s代表传⼊的字符串"""
+    # 使字符变为⼩写并去除两侧空⽩符, z再使⽤unicodeToAscii去掉重⾳标记
+    s = unicodeToAscii(s.lower().strip())
+    # 在.!?前加⼀个空格
+    s = re.sub(r"([.!?])", r" \1", s)
+    # 使⽤正则表达式将字符串中不是⼤⼩写字⺟和正常标点的都替换成空格
+    s = re.sub(r"[^a-zA-Z.!?]+", r" ", s)
+    return s
+
+
+'''
+s = "Are you kidding me?"
+nsr = normalizeString(s)
+print(nsr)
+'''
+
+data_path = './data/eng-fra.txt'
+
+
+def readLangs(lang1, lang2):
+    """读取语⾔函数, 参数lang1是源语⾔的名字, 参数lang2是⽬标语⾔的名字
+    返回对应的class Lang对象, 以及语⾔对列表"""
+    # 从⽂件中读取语⾔对并以/n划分存到列表lines中
+    lines = open(data_path, encoding='utf-8'). \
+        read().strip().split('\n')
+    # 对lines列表中的句⼦进⾏标准化处理，并以\t进⾏再次划分, 形成⼦列表, 也就是语⾔对
+    pairs = [[normalizeString(s) for s in l.split('\t')] for l in lines]
+    # 然后分别将语⾔名字传⼊Lang类中, 获得对应的语⾔对象, 返回结果
+    input_lang = Lang(lang1)
+    output_lang = Lang(lang2)
+    return input_lang, output_lang, pairs
+
+
+lang1 = "eng"
+lang2 = "fra"
+
+input_lang, output_lang, pairs = readLangs(lang1, lang2)
+print("input_lang:", input_lang)
+print("output_lang:", output_lang)
+# 此时所有数据并未转为index
+print("word2index:", input_lang.word2index)
+print("index2word:", input_lang.index2word)
+# pairs中的前五个: [['go .', 'va !'], ['run !', 'cours !'], ['run !', 'courez !'], ['wow !', 'ca alors !'], ['fire !', 'au feu !']]
+print("pairs中的前五个:", pairs[:5])
+
+# 过滤出符合我们要求的语⾔对
+# 设置组成句⼦中单词或标点的最多个数
+MAX_LENGTH = 10
+# 选择带有指定前缀的语⾔特征数据作为训练数据
+eng_prefixes = (
+    "i am ", "i m ",
+    "he is", "he s ",
+    "she is", "she s ",
+    "you are", "you re ",
+    "we are", "we re ",
+    "they are", "they re "
+)
+
+def filterPair(p):
+ """语⾔对过滤函数, 参数p代表输⼊的语⾔对, 如['she is afraid.', 'elle
+malade.']"""
+ # p[0]代表英语句⼦，对它进⾏划分，它的⻓度应⼩于最⼤⻓度MAX_LENGTH并且要以指定的前缀开头
+ # p[1]代表法⽂句⼦, 对它进⾏划分，它的⻓度应⼩于最⼤⻓度MAX_LENGTH
+ return len(p[0].split(' ')) < MAX_LENGTH and \
+     p[0].startswith(eng_prefixes) and \
+    len(p[1].split(' ')) < MAX_LENGTH
+
+def filterPairs(pairs):
+ """对多个语⾔对列表进⾏过滤, 参数pairs代表语⾔对组成的列表, 简称语⾔对列表"""
+ # 函数中直接遍历列表中的每个语⾔对并调⽤filterPair即可
+ return [pair for pair in pairs if filterPair(pair)]
+
+fpairs = filterPairs(pairs)
+print("过滤后的pairs前五个:", fpairs[:5])
