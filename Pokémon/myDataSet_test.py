@@ -21,12 +21,12 @@ def main():
 
     # 预处理
     data_transform = {
-        "train": transforms.Compose([transforms.RandomResizedCrop(224),
+        "train": transforms.Compose([transforms.RandomResizedCrop(224),#随机裁剪，这里会导致一些图片很怪异，图片为224*224
                                      transforms.RandomHorizontalFlip(),
                                      transforms.ToTensor(),
                                      transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])]),
         "val": transforms.Compose([transforms.Resize(256),
-                                   transforms.CenterCrop(224),
+                                   transforms.CenterCrop(224),#中心裁剪
                                    transforms.ToTensor(),
                                    transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])}
 
@@ -49,7 +49,10 @@ def main():
     val_loader=DataLoader(val_data_set, batch_size=batch_size, shuffle=True, num_workers=nw,
                               collate_fn=train_data_set.collate_fn)
     # 可视化数据
-    #plot_data_loader_image(train_loader)
+    print("测试")
+    plot_data_loader_image(train_loader)
+
+    print("预测")
     plot_data_loader_image(val_loader)
 
 
