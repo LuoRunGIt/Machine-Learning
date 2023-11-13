@@ -8,7 +8,7 @@ import torch.nn as nn
 '''
 
 rnn=nn.LSTM(5,6,2)#bidirectional=True 设置双向
-
+#rnn=nn.LSTM(5,6,2,bidirectional=True)#bidirectional=True 设置双向
 '''
 第一个参数 squence_length 输入序列的长度
 第二个参数 batch_size 批次的样本数量

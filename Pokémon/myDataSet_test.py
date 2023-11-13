@@ -59,3 +59,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    # E:\BaiduNetdiskDownload\baokemeng\pokemon\charmander\00000033.jpg isn't RGB mode.
