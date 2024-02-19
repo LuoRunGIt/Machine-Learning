@@ -40,6 +40,7 @@ class Attn(nn.Module):
         # 我们采⽤常⻅的第⼀种计算规则
         # 将Q，K进⾏纵轴拼接, 做⼀次线性变化, 最后使⽤softmax处理获得结果
 
+        #cat表示拼接
         attn_weights = F.softmax(self.attn(torch.cat((Q[0], K[0]), 1)), dim=1)
         print('catshape===',torch.cat((Q[0],K[0]),1).shape)
         # 然后进⾏第⼀步的后半部分, 将得到的权重矩阵与V做矩阵乘法计算,

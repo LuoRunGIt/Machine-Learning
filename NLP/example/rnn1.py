@@ -13,6 +13,9 @@ import math
 import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
+'''
+RNN人名分类器
+'''
 
 # 获取所有常⽤字符包括字⺟和常⽤标点
 all_letters = string.ascii_letters + ".,;'"
@@ -100,7 +103,7 @@ line_tensor = lineToTensor(line)
 print("line_tensot:", line_tensor)
 
 '''-------------------------
-模型构建
+=============================模型构建================================
 '''
 
 
@@ -172,6 +175,12 @@ class LSTM(nn.Module):
 # GRU与传统RNN的外部形式相同, 都是只传递隐层张量, 因此只需要更改预定义层的名字
 class GRU(nn.Module):
     def __init__(self, input_size, hidden_size, output_size, num_layers=1):
+        '''
+        input_size：每个token作为输入时的向量长度
+        hidden_size：中间的隐层向量长度
+        num_layers：RNN模型的层数
+
+        '''
         super(GRU, self).__init__()
         self.hidden_size = hidden_size
         self.num_layers = num_layers

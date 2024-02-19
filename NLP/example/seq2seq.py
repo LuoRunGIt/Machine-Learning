@@ -7,7 +7,7 @@
 
 '''
 
-'''步骤1 导入工具包'''
+'''==========================步骤1 导入工具包============================'''
 # 从io⼯具包导⼊open⽅法
 from io import open
 # ⽤于字符规范化
@@ -26,13 +26,13 @@ from torch import optim
 # 设备选择, 我们可以选择在cuda或者cpu上运⾏你的代码
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-'''步骤2对持久化⽂件中数据进⾏处理, 以满⾜模型训练要求'''
+'''============步骤2对持久化⽂件中数据进⾏处理, 以满⾜模型训练要求==================='''
 # 起始标志
 SOS_token = 0
 # 结束标志
 EOS_token = 1
 
-
+'''Lang 为Language缩写表示'''
 class Lang:
     def __init__(self, name):
         """初始化函数中参数name代表传⼊某种语⾔的名字"""
@@ -43,6 +43,7 @@ class Lang:
         # 初始化⾃然数值对应词汇的字典, 其中0，1对应的SOS和EOS已经在⾥⾯了
         self.index2word = {0: "SOS", 1: "EOS"}
         # 初始化词汇对应的⾃然数索引，这⾥从2开始，因为0，1已经被开始和结束标志占⽤了
+
         self.n_words = 2
 
     def addSentence(self, sentence):
