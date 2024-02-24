@@ -3,6 +3,7 @@
 # @FileName: 1.创建数据库.py
 import pymysql
 import rsa1
+import rsa
 
 # 创建与数据库的连接
 # 创建连接
@@ -12,20 +13,23 @@ import rsa1
 # charset   数据库编码
 
 #这里简单加密了一下
-f=open('./crypto')
-crypto = f.readlines()  # 直接将文件中按行读到list里，效果与方法2一样
-f.close()  # 关
+
+with open("crypto.txt", "rb") as x:
+    crypto = x.read()
+    x.close()
 print(crypto) #返回list
 
-f=open('./key_pri')
-key_pri = f.readlines()  # 直接将文件中按行读到list里，效果与方法2一样
-f.close()  # 关
-print(key_pri) #返回list
+with open("key_pri.pem", "rb") as x:
+    e = x.read()
+    key_pri=rsa.PrivateKey.load_pkcs1(e)
+    x.close()
+print(e)
 
 passwd = rsa1.rsaDecrypt(crypto, key_pri)
 
 #这种硬编码性质的链接并不安全因此在此
 conn = pymysql.connect(host='localhost',port=3306, user='root', password=passwd)
+
 # 创建游标
 cursor = conn.cursor()
 # 创建数据库的sql(使用if判断是否已经存在数据库，数据库不存在时才会创建，否则会报错)
