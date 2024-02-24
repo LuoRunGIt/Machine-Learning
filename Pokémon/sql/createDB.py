@@ -1,5 +1,3 @@
-# @Time    : 2021/12/13 20:15
-# @Author  : 南黎
 # @FileName: 1.创建数据库.py
 import pymysql
 import rsa1
