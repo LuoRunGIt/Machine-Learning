@@ -4,7 +4,7 @@ class Skill:
         self.id = 0
         self.name = ""
         self.damage = 0
-        # 3类 物理0、特殊1、变化2
+        # 3类 物理0、特殊1、变化2、物理aoe3、特殊aoe4、变化aoe5、打全场6、以此类推
         self.Class = 0
         # 命中率
         self.hit = 100
@@ -15,6 +15,7 @@ class Skill:
         self.description = "技能说明"
         #招式优先级
         self.priority=0
+
     # 技能效果
     def skill_effects(self):
         print(self.description)
@@ -34,3 +35,4 @@ class Skill:
         self.attribute = attibute
         self.description = description
         self.priority=priority
+
