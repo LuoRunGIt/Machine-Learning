@@ -1,6 +1,6 @@
 # 宝可梦类
 import math
-
+import equipment
 
 class pocketMoster:
     natures = {"怕寂寞": 0, "加攻击减防御": 0, "顽皮": 1, "加攻击减特防": 1, "勇敢": 2, "加攻击减速度": 2, "固执": 3, "加攻击减特攻": 3,
@@ -58,8 +58,9 @@ class pocketMoster:
         self.F_SpA = 31
         self.F_SpD = 31
         self.F_Spe = 31
-        # 最终计算出6维
+        self.equ=equipment.Equipment
 
+    # 最终计算出6维
     def Panel(self):
         # 面板属性
         self.F_Hp = math.floor(
@@ -237,22 +238,23 @@ class pocketMoster:
     def get_Nature(self):
         return self.nature
 
+#测试函数
+def test():
+    # 满级斗笠菇未修正252攻击 359 252速度239 防御178 hp261
+    #对照测试网站https://professorsidon.github.io/VGC-Damage-Calculator-Chinese/
+    mypok = pocketMoster()
+    mypok.b_Hp = 60
+    mypok.b_Atk = 130
+    mypok.b_Def = 80
+    mypok.b_SpA = 60
+    mypok.b_SpD = 60
+    mypok.b_Spe = 70
 
-# 满级斗笠菇未修正252攻击 359 252速度239 防御178 hp261
+    mypok.set_Nature("怕")
+    mypok.set_Nature("爽朗")
+    print(mypok.nature)
 
-mypok = pocketMoster()
-mypok.b_Hp = 60
-mypok.b_Atk = 130
-mypok.b_Def = 80
-mypok.b_SpA = 60
-mypok.b_SpD = 60
-mypok.b_Spe = 70
-
-mypok.set_Nature("怕")
-mypok.set_Nature("爽朗")
-print(mypok.nature)
-
-mypok.set_Evs(6, 252, 0, 0, 0, 252)
-mypok.Evs_check()
-mypok.level = 50
-print(mypok.Panel())
+    mypok.set_Evs(6, 252, 0, 0, 0, 252)
+    mypok.Evs_check()
+    mypok.level = 50
+    print(mypok.Panel())
