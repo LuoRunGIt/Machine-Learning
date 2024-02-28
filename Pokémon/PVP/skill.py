@@ -15,13 +15,15 @@ class Skill:
         self.description = "技能说明"
         #招式优先级
         self.priority=0
+        #特殊类别如声音类
+        self.special=0
 
     # 技能效果
     def skill_effects(self):
         print(self.description)
 
     # 设置技能基本情况
-    def set_skill(self, num=0, name="未知", damage=0, classes=0, hit=100, PP=10, attibute="一般", description="",priority=0):
+    def set_skill(self, num=0, name="未知", damage=0, classes=0, hit=100, PP=10, attibute="一般", description="",priority=0,special=0):
         self.id = num
         self.name = name
         self.damage = damage
@@ -35,4 +37,5 @@ class Skill:
         self.attribute = attibute
         self.description = description
         self.priority=priority
+        self.special=special
 

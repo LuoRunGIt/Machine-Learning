@@ -21,7 +21,8 @@ def createTable():
             PP int not null,
             attribute varchar(20),
             description varchar(500),
-            priority int not null
+            priority int not null,
+            special int not null
              )
         '''
 
@@ -38,15 +39,15 @@ def createTable():
 
 # 插入，未完成版，没有参数化，参数化8个参数
 # 名称name,伤害damage,类别classes,命中率hit,使用次数PP,属性attribute,描述description,优先级priority
-def insert_skill(name="", damage=0, classes=0, hit=100, pp=0, attribute="", description="", priority=0):
+def insert_skill(name="", damage=0, classes=0, hit=100, pp=0, attribute="", description="", priority=0,special=0):
     db = connetDB.connect_db()
     # 创建游标对象cursor
     cursor = db.cursor()
     sql = '''
-        INSERT INTO skills(name,damage,classes,hit,PP,attribute,description,priority) 
-        VALUES(%s,%s,%s,%s,%s,%s,%s,%s);'''
+        INSERT INTO skills(name,damage,classes,hit,PP,attribute,description,priority,special) 
+        VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s);'''
     # cursor.execute(sql, ('地震', 100, 0, 100, 10, '地面', '除自身以外场上全部可以攻击到的宝可梦', 0))
-    cursor.execute(sql, (name, damage, classes, hit, pp, attribute, description, priority))
+    cursor.execute(sql, (name, damage, classes, hit, pp, attribute, description, priority,special))
     db.commit()  # 这句一定要有，提交事务
     db.close()
 
@@ -63,8 +64,8 @@ def insert_skills(skills_list):
     db = connetDB.connect_db()
     cursor = db.cursor()
     sql = '''
-            INSERT INTO skills(name,damage,classes,hit,PP,attribute,description,priority) 
-            VALUES(%s,%s,%s,%s,%s,%s,%s,%s);'''
+            INSERT INTO skills(name,damage,classes,hit,PP,attribute,description,priority,special) 
+            VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s);'''
 
     try:
         # 执行sql语句
@@ -83,8 +84,8 @@ def insert_skills(skills_list):
 
 
 '''
-list=[("月亮之力",95,1,100,15,"妖精","借用月亮的力量攻击对手。有时会降低对手的特攻。",0),
-      ("魔法闪耀",80,4,100,10,"妖精","妖精系aoe",0)]
+list=[("月亮之力",95,1,100,15,"妖精","借用月亮的力量攻击对手。有时会降低对手的特攻。",0,0),
+      ("魔法闪耀",80,4,100,10,"妖精","妖精系aoe",0,0)]
 
 insert_skills(list)
 '''
@@ -156,9 +157,10 @@ def search_byname(name=""):
         attribute = row[6]
         description = row[7]
         priority = row[8]
+        special=row[9]
 
         print("序号", num, "名称", name, "伤害", damage, "类别", classes, "命中率", hit, "使用次数", pp, "属性", attribute, "\n",
-              "描述", description, "优先度", priority)  # 输出
+              "描述", description, "优先度", priority,"特殊类型（如声音）",special)  # 输出
 
 
 # search_byname("地震")
@@ -179,7 +181,7 @@ def exl_write():
             # openpyxl操作excel是，行和列的索引从1开始，所以要+1， col_id, col_name表示索引和索引内容
             # 列索引，读取那些列的数据
             for col_id, col_name in enumerate(
-                    ['id', 'name', 'damage', 'classes', 'hit', 'pp', 'attribute', 'description', 'priority']):
+                    ['id', 'name', 'damage', 'classes', 'hit', 'pp', 'attribute', 'description', 'priority','special']):
                 excel_sheet.cell(1, col_id + 1, col_name)  # 往单元格写入数据，第1列表格的表头''写入
             # 写入数据
             for row_id, row_emp in enumerate(cursor.fetchall()):  # 获得每一行的数据
@@ -217,9 +219,9 @@ def exl_read():
             # cursor.executemany表示批量插入数据，批处理
             cursor.executemany(
                 'insert into skills'
-                '(id,name,damage,classes,hit,pp,attribute,description,priority)'
+                '(id,name,damage,classes,hit,pp,attribute,description,priority,special)'
                 'values'
-                '(%s,%s,%s,%s,%s,%s,%s,%s,%s)',
+                '(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
                 excel_data
             )
         db.commit()
@@ -231,4 +233,4 @@ def exl_read():
         db.close()  # 无论如何都要关闭连接，节省资源占用
 
 
-exl_read()
+
