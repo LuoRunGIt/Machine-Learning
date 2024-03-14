@@ -18,3 +18,9 @@ class CNNet(nn.Module):
         x = F.dropout(x, training=self.training)
         x = F.relu(self.fc2(x))
         return F.log_softmax(x, dim=1)
+
+cnn = CNNet()
+    # cnn 实例化
+cnn.train()
+
+print(cnn)

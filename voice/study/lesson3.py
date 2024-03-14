@@ -15,27 +15,34 @@ import os
 from collections import Counter
 
 
-
-
 # 创建卷积神经网络
 class CNNet(nn.Module):
     def __init__(self):
         super().__init__()
         self.conv1 = nn.Conv2d(3, 32, kernel_size=5)
         self.conv2 = nn.Conv2d(32, 64, kernel_size=5)
-        self.conv2_drop = nn.Dropout2d()
+        # 图像大小为201x81
+        # 第一层卷积计算结果为197x77
+        # 池化后为98x38 注意池化除不尽则下取整
+        # 第二次卷积为94x34
+        # 第二次池化为47x17
+        # 第一层线性为47x17x64=51136
+        self.conv2_drop = nn.Dropout2d()  # 随机失活
+        # 数据调整为一维数据
         self.flatten = nn.Flatten()
         self.fc1 = nn.Linear(51136, 50)
         self.fc2 = nn.Linear(50, 2)
 
     def forward(self, x):
         x = F.relu(F.max_pool2d(self.conv1(x), 2))
+        # 最大池化，2表示池化层大小
         x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
         x = self.flatten(x)
         x = F.relu(self.fc1(x))
         x = F.dropout(x, training=self.training)
         x = F.relu(self.fc2(x))
         return F.log_softmax(x, dim=1)
+
 
 '''
 # 指定设备
@@ -54,10 +61,9 @@ optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 '''
 
 
-
 # Create the validation/test function
 
-def test(dataloader, model,device,cost):
+def test(dataloader, model, device, cost):
     size = len(dataloader.dataset)
     model.eval()
     test_loss, correct = 0, 0
@@ -68,19 +74,21 @@ def test(dataloader, model,device,cost):
             pred = model(X)
 
             test_loss += cost(pred, Y).item()
-            correct += (pred.argmax(1)==Y).type(torch.float).sum().item()
+            correct += (pred.argmax(1) == Y).type(torch.float).sum().item()
 
     test_loss /= size
     correct /= size
 
-    print(f'\nTest Error:\nacc: {(100*correct):>0.1f}%, avg loss: {test_loss:>8f}\n')
+    print(f'\nTest Error:\nacc: {(100 * correct):>0.1f}%, avg loss: {test_loss:>8f}\n')
 
 
-#Train the model
+# Train the model
 # 设置超参数
 epoches = 15
 batch_size = 50
 learning_rate = 0.001
+
+
 def main():
     # 将声谱图图像加载到数据加载器中进行训练
     data_path = './data/spectrograms'  # looking in subfolder train
@@ -135,7 +143,7 @@ def main():
 
     # 指定设备
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    cost=torch.nn.CrossEntropyLoss()
+    cost = torch.nn.CrossEntropyLoss()
     print('Using {} device'.format(device))
     cnn = CNNet().to(device)
     # cnn 实例化
@@ -163,7 +171,7 @@ def main():
                 loss, current = loss.item(), batch * len(X)
                 print(f'loss: {loss:>7f}  [{current:>5d}/{size:>5d}]')
 
-    test(test_dataloader,cnn,device,cost)
+    test(test_dataloader, cnn, device, cost)
 
     print('Done!')
     url = os.path.dirname(os.path.realpath(__file__)) + '/models/'
@@ -175,5 +183,5 @@ def main():
     torch.save(cnn, url + model_name)
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     main()
