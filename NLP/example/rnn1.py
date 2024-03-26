@@ -437,7 +437,7 @@ print("rnn_output:", rnn_output)
 print("gru_output:", lstm_output)
 print("gru_output:", gru_output)
 
-##构建预测函数
+'''=======================================##构建预测函数=========================================================='''
 def predict(input_line, evaluate, n_predictions=3):
  """预测函数, 输⼊参数input_line代表输⼊的名字,
  n_predictions代表需要取最有可能的top个"""
@@ -463,7 +463,7 @@ def predict(input_line, evaluate, n_predictions=3):
         predictions.append([value, all_categories[category_index]])
 
 
-for evaluate_fn in [evaluateRNN, evaluateLSTM, evaluateGRU]:
+for evaluate_fn in [evaluateRNN,evaluateLSTM,evaluateGRU]:
  print("-"*18)
  predict('Dovesky', evaluate_fn)
  predict('Jackson', evaluate_fn)
